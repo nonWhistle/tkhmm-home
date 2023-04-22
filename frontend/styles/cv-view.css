@@ -1,6 +1,20 @@
 #header {
     background: white;
     margin: 0 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#user-name-label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#avatar-and-name-container {
+    display: flex;
+    align-items: center;
 }
 
 #app-info {

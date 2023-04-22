@@ -1,21 +1,16 @@
-package com.tkhmm.application.views.helloworld;
+package com.tkhmm.application.views.cvview;
 
 import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.security.AuthenticatedUser;
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -45,31 +40,28 @@ public class CvView extends Div {
 
         //Initialise the header
         Header header = new Header();
-//        header.setId("header");
-//        Image image = new Image();
-//        image.setSrc("https://en.wikipedia.org/wiki/Coca-Cola#/media/File:Coca-Cola_logo.svg");
-//        image.setMaxHeight("175px");
-//        Button logout = new Button("Logout");
-//        header.add(image, logout);
+        header.setId("header");
 
         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
 
+            Div avatarNameContainer = new Div();
+            avatarNameContainer.setId("avatar-and-name-container");
+
             Avatar avatar = new Avatar(user.getName());
+            avatar.setColorIndex(2);
             avatar.setMaxHeight("175px");
 
-            MenuBar userMenu = new MenuBar();
-            MenuItem userName = userMenu.addItem("");
-            Div div = new Div();
-            div.add(avatar);
-            div.add(user.getName());
-            userName.add(div);
-            userName.getSubMenu().addItem("Sign out", e -> {
-                authenticatedUser.logout();
-            });
+            Label userNameLabel = new Label(user.getName());
+            userNameLabel.setId("user-name-label");
+            avatarNameContainer.add(avatar, userNameLabel);
 
-            header.add(userMenu);
+            Button signOut = new Button("Sign out");
+            signOut.addClickListener(click -> authenticatedUser.logout());
+            signOut.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+            header.add(avatarNameContainer, signOut);
         } else {
             Anchor loginLink = new Anchor("login", "Sign in");
             header.add(loginLink);

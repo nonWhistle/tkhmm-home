@@ -1,10 +1,7 @@
 package com.tkhmm.application.views.login;
 
-import com.tkhmm.application.data.Role;
-import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.security.AuthenticatedUser;
 import com.tkhmm.application.security.UserDetailsServiceImpl;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -14,10 +11,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Set;
 
 @AnonymousAllowed
 @PageTitle("Login")
