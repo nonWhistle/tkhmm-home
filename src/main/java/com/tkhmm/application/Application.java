@@ -1,6 +1,7 @@
 package com.tkhmm.application;
 
 import com.tkhmm.application.data.service.UserRepository;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
@@ -21,7 +22,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer {
+public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

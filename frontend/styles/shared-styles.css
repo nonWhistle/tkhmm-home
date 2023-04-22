@@ -1,0 +1,8 @@
+.top-level-parent {
+    height: 100vh;
+    display: block;
+    max-width: 1500px;
+    margin: auto;
+    padding: 16px;
+    background: #152238;
+}

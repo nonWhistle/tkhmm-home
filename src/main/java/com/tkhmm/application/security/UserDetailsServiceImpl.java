@@ -31,6 +31,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
+    public void save(User user) {
+        if (user != null) {
+            userRepository.save(user);
+        }
+    }
+
     private static List<GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());

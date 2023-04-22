@@ -1,6 +1,10 @@
 package com.tkhmm.application.views.login;
 
+import com.tkhmm.application.data.Role;
+import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.security.AuthenticatedUser;
+import com.tkhmm.application.security.UserDetailsServiceImpl;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -10,6 +14,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Set;
 
 @AnonymousAllowed
 @PageTitle("Login")
@@ -18,16 +26,27 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
     private final AuthenticatedUser authenticatedUser;
 
-    public LoginView(AuthenticatedUser authenticatedUser) {
+    private final UserDetailsServiceImpl userDetailsService;
+
+    public LoginView(AuthenticatedUser authenticatedUser, UserDetailsServiceImpl userDetailsService, PasswordEncoder passwordEncoder) {
         this.authenticatedUser = authenticatedUser;
+        this.userDetailsService = userDetailsService;
+
         setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
 
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("TKHMm");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
+        i18n.getHeader().setTitle("Welcome to my application");
+        i18n.getHeader().setDescription("Login using user/user");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
+
+//        User user = new User();
+//        user.setHashedPassword(passwordEncoder.encode("user"));
+//        user.setUsername("user");
+//        user.setRoles(Set.of(Role.USER, Role.ADMIN));
+//        user.setName("user");
+//        userDetailsService.save(user);
 
         setForgotPasswordButtonVisible(false);
         setOpened(true);
