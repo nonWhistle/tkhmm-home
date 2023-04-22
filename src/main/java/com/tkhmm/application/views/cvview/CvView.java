@@ -7,6 +7,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -29,15 +31,26 @@ public class CvView extends Div {
     private static final String appInfoText = "This is a Spring Boot Application that runs on an AWS EC2 instance. " +
             "The backend is connected to a PostgreSQL database and communicates via a JDBC connector. The front end is " +
             "built using Vaadin libarays and custom styling is applied with CSS. To view the source code for this " +
-            "application click the button below.";
+            "application click the link below.";
 
-    private AuthenticatedUser authenticatedUser;
+    private static final String restApiText = "Enter text into the area below and click the button, this will " +
+            "trigger an event to send the text to the endpoint 'https://localhost:8080/api/restapisection' the text " +
+            " will then be broadcasted. This view will be listening for that broadcast and the message will be " +
+            "displayed beneath the button";
+
+    private final AuthenticatedUser authenticatedUser;
 
     public CvView(AuthenticatedUser authenticatedUser) {
         log.info("Loading Cv View");
+        this.authenticatedUser = authenticatedUser;
 
         addClassNames("top-level-parent");
 
+        initialiseHeader();
+        initialiseRestApiSection();
+    }
+
+    private void initialiseHeader() {
         //Initialise the header
         Header header = new Header();
         header.setId("header");
@@ -69,13 +82,37 @@ public class CvView extends Div {
 
         //Initialise the app information section
         Section appinfo = new Section();
-        appinfo.setId("app-info");
+        appinfo.addClassName("app-section");
         H2 appInfoTitle = new H2("Welcome to my application");
         Paragraph paragraph = new Paragraph(appInfoText);
         Anchor anchor = new Anchor("https://github.com/nonWhistle/tkhmm-home.git", "Source Code");
         appinfo.add(appInfoTitle, paragraph, anchor);
 
         add(header, appinfo);
+    }
+
+    private void initialiseRestApiSection() {
+        //Initialise the app information section
+        Section restApiSection = new Section();
+        restApiSection.addClassName("app-section");
+
+        TextField apiTextArea = new TextField("Your text here");
+        apiTextArea.addClassName("rest-tools");
+
+        Label fromEndPoint = new Label();
+        fromEndPoint.addClassName("rest-tools");
+
+        Button sendToEndPoint = new Button("Click here");
+        sendToEndPoint.addClassName("rest-tools");
+        sendToEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        sendToEndPoint.addClickListener(click -> {
+            fromEndPoint.setText(apiTextArea.getValue());
+        });
+
+        restApiSection.add(new H4("Sending data via Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
+                apiTextArea, sendToEndPoint, fromEndPoint);
+
+        add(restApiSection);
     }
 
 }
