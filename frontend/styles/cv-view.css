@@ -1,3 +1,7 @@
+html {
+    font-weight: bold;
+}
+
 #header {
     background: white;
     margin: 0 0 16px 0;
@@ -30,7 +34,7 @@
     margin: 0 auto 30px auto;
 }
 
-.app-section > h4 {
+.app-section > h3 {
     margin: 0 0 30px 0;
 }
 

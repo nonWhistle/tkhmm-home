@@ -109,7 +109,7 @@ public class CvView extends Div {
             fromEndPoint.setText(apiTextArea.getValue());
         });
 
-        restApiSection.add(new H4("Sending data via Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
+        restApiSection.add(new H3("Sending data via Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
                 apiTextArea, sendToEndPoint, fromEndPoint);
 
         add(restApiSection);
