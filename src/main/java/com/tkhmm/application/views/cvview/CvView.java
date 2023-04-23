@@ -1,18 +1,19 @@
 package com.tkhmm.application.views.cvview;
 
 import com.tkhmm.application.data.entity.User;
+import com.tkhmm.application.events.PostTextEvent;
 import com.tkhmm.application.security.AuthenticatedUser;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -40,9 +41,12 @@ public class CvView extends Div {
 
     private final AuthenticatedUser authenticatedUser;
 
-    public CvView(AuthenticatedUser authenticatedUser) {
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public CvView(AuthenticatedUser authenticatedUser, ApplicationEventPublisher applicationEventPublisher) {
         log.info("Loading Cv View");
         this.authenticatedUser = authenticatedUser;
+        this.applicationEventPublisher = applicationEventPublisher;
 
         addClassNames("top-level-parent");
 
@@ -106,7 +110,7 @@ public class CvView extends Div {
         sendToEndPoint.addClassName("rest-tools");
         sendToEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendToEndPoint.addClickListener(click -> {
-            fromEndPoint.setText(apiTextArea.getValue());
+            applicationEventPublisher.publishEvent(new PostTextEvent(this, apiTextArea.getValue()));
         });
 
         restApiSection.add(new H3("Sending data via Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
