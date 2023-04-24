@@ -32,10 +32,10 @@ public class GetJokeEventListener implements ApplicationListener<GetJokeEvent> {
                     .header("X-RapidAPI-Host", "jokes-by-api-ninjas.p.rapidapi.com")
                     .asString();
 
-            String aJoke = "";
+            String aJoke = "Failed to retrieve a joke from API Ninjas, but here is a temporary static one until " +
+                    "I have fixed the problem. Two goldfish in a bowl, one says to the other 'How do you drive this then'";
             for (JsonNode value : objectMapper.readTree(response.getBody())) {
-                aJoke = value.path("joke").asText();
-                log.info(aJoke);
+                aJoke = value.path("joke").asText().equals("")? aJoke : value.path("joke").asText();
             }
 
             CvViewData cvViewData = new CvViewData();

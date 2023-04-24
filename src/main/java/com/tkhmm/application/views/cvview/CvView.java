@@ -15,10 +15,10 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.shared.Registration;
 import org.springframework.context.ApplicationEventPublisher;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -27,8 +27,7 @@ import java.util.logging.Logger;
 @RouteAlias(value = "")
 @CssImport("./styles/cv-view.css")
 @CssImport("./styles/shared-styles.css")
-//@RolesAllowed("USER")
-@AnonymousAllowed
+@RolesAllowed("USER")
 public class CvView extends Div {
 
     private static final Logger log = Logger.getLogger(CvView.class.getSimpleName());
@@ -135,7 +134,6 @@ public class CvView extends Div {
     }
 
     private void updateJoke() {
-        log.info("Entered here");
         fromEndPoint.setText(cvViewData.getAJoke());
     }
 
