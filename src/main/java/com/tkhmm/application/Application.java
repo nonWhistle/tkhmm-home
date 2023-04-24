@@ -4,6 +4,7 @@ import com.tkhmm.application.data.service.UserRepository;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
 import javax.sql.DataSource;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@Push
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
     public static void main(String[] args) {

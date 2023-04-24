@@ -1,18 +1,22 @@
 package com.tkhmm.application.views.cvview;
 
+import com.tkhmm.application.broadcaster.CvViewBroadcaster;
 import com.tkhmm.application.data.entity.User;
-import com.tkhmm.application.events.PostTextEvent;
+import com.tkhmm.application.events.GetJokeEvent;
 import com.tkhmm.application.security.AuthenticatedUser;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.shared.Registration;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
@@ -34,12 +38,16 @@ public class CvView extends Div {
             "built using Vaadin libarays and custom styling is applied with CSS. To view the source code for this " +
             "application click the link below.";
 
-    private static final String restApiText = "Enter text into the area below and click the button, this will " +
-            "trigger an event to send the text to the endpoint 'https://localhost:8080/api/restapisection' the text " +
-            " will then be broadcasted. This view will be listening for that broadcast and the message will be " +
-            "displayed beneath the button";
+    private static final String restApiText = "Click the button below to receive a joke from api-ninjas. The button " +
+            "will trigger a Spring Application Event which will request a joke from the endpoint " +
+            "'https://jokes-by-api-ninjas.p.rapidapi.com'. The joke will then be Broadcasted to this views id and the" +
+            " joke will be displayed beneath the button";
 
     private final AuthenticatedUser authenticatedUser;
+    private final UI ui;
+    private Registration broadcasterRegistration;
+    private Label fromEndPoint;
+    private CvViewData cvViewData;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -50,6 +58,7 @@ public class CvView extends Div {
 
         addClassNames("top-level-parent");
 
+        ui = UI.getCurrent();
         initialiseHeader();
         initialiseRestApiSection();
     }
@@ -100,23 +109,39 @@ public class CvView extends Div {
         Section restApiSection = new Section();
         restApiSection.addClassName("app-section");
 
-        TextField apiTextArea = new TextField("Your text here");
-        apiTextArea.addClassName("rest-tools");
+        fromEndPoint = new Label();
+        fromEndPoint.setId("joke-line");
 
-        Label fromEndPoint = new Label();
-        fromEndPoint.addClassName("rest-tools");
-
-        Button sendToEndPoint = new Button("Click here");
+        Button sendToEndPoint = new Button("Get a joke");
         sendToEndPoint.addClassName("rest-tools");
         sendToEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendToEndPoint.addClickListener(click -> {
-            applicationEventPublisher.publishEvent(new PostTextEvent(this, apiTextArea.getValue()));
+            applicationEventPublisher.publishEvent(new GetJokeEvent(this));
         });
 
-        restApiSection.add(new H3("Sending data via Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
-                apiTextArea, sendToEndPoint, fromEndPoint);
+        restApiSection.add(new H3("Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
+                sendToEndPoint, fromEndPoint);
 
         add(restApiSection);
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        broadcasterRegistration = CvViewBroadcaster.register((theLatestCvViewDataObject -> {
+            cvViewData = theLatestCvViewDataObject;
+            log.info(theLatestCvViewDataObject.getAJoke());
+            ui.access(this::updateJoke);
+        }), 1L);
+    }
+
+    private void updateJoke() {
+        log.info("Entered here");
+        fromEndPoint.setText(cvViewData.getAJoke());
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        broadcasterRegistration.remove();
+        broadcasterRegistration = null;
+    }
 }

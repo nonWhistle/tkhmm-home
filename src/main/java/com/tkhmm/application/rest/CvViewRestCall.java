@@ -5,26 +5,21 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import static com.tkhmm.application.rest.CvViewRestCall.ApiCredentials.API_KEY;
+import static com.tkhmm.application.rest.CvViewRestCall.ApiCredentials.ENDPOINT;
 
 @NoArgsConstructor
 @Component
 public class CvViewRestCall {
 
     private static final Logger log = Logger.getLogger(CvViewRestCall.class.getSimpleName());
-
-    /**
-     * Creates the body of the JSON message
-     */
-    protected static final ObjectMapper objectMapper = new ObjectMapper();
-
-    /**
-     * The returned code of a successfully posted JSON message and successfully created object.
-     */
-    protected final static int RESPONSE_201 = 201;
 
     /**
      * The returned code of a successfully posted JSON message.
@@ -40,10 +35,6 @@ public class CvViewRestCall {
      * Number of seconds to wait between each post attempt.
      */
     protected static int SECONDS_BETWEEN_TRY = 15;
-
-    private static final String API_KEY = "abc123SuperSecretApiKey";
-
-    private static final String ENDPOINT = "https://localhost:8080/api/cvview/";
 
     public void postText(String message) {
         int returnedStatus = 0;
@@ -95,15 +86,34 @@ public class CvViewRestCall {
         Unirest.setTimeouts(0, 0);
 
         HttpResponse<String> response = Unirest.put(ENDPOINT + message)
-                .header("API_KEY", API_KEY).asString();
+                .header("api-key", API_KEY).asString();
 
         log.info("\n\033[1mPost Text\033[0m" +
-                "\nurl: " + ENDPOINT +
-                "\nAPI_KEY: " + API_KEY +
+                "\nurl: " + ENDPOINT + message +
+                "\napi-key: " + API_KEY +
                 "\nResponse status: " + response.getStatus() +
                 "\nResponce status text: " + response.getStatusText() +
                 "\nResponce Body: " + response.getBody());
 
         return response.getStatus();
+    }
+
+    @Component
+    @NoArgsConstructor
+    public static class ApiCredentials {
+
+        public static String ENDPOINT;
+
+        public static String API_KEY;
+
+        @Value("${api.post.text.endpoint:notSet}")
+        private void setEndpoint(String value) {
+             ENDPOINT= value;
+        }
+
+        @Value("${api.post.text.api.key:notSet}")
+        private void setApiKey(String value) {
+            API_KEY = value;
+        }
     }
 }
