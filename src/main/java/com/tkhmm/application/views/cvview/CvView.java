@@ -3,6 +3,7 @@ package com.tkhmm.application.views.cvview;
 import com.tkhmm.application.broadcaster.CvViewBroadcaster;
 import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.events.GetJokeEvent;
+import com.tkhmm.application.events.PostTextEvent;
 import com.tkhmm.application.security.AuthenticatedUser;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -12,6 +13,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -33,19 +35,25 @@ public class CvView extends Div {
     private static final Logger log = Logger.getLogger(CvView.class.getSimpleName());
 
     private static final String appInfoText = "This is a Spring Boot Application that runs on an AWS EC2 instance. " +
-            "The backend is connected to a PostgreSQL database and communicates via a JDBC connector. The front end is " +
-            "built using Vaadin libarays and custom styling is applied with CSS. To view the source code for this " +
-            "application click the link below.";
+            "The backend is connected to a PostgreSQL database hosted on an AWS RDS instance and communicates via a " +
+            "JDBC connector. The front end is built using Vaadin libarays and custom styling is applied with CSS. " +
+            "To view the source code for this application click the link below.";
 
     private static final String restApiText = "Click the button below to receive a joke from api-ninjas. The button " +
             "will trigger a Spring Application Event which will request a joke from the endpoint " +
             "'https://jokes-by-api-ninjas.p.rapidapi.com'. The joke will then be Broadcasted to this views id and the" +
             " joke will be displayed beneath the button";
 
+    private static final String restApiTextSectionTwo = "Enter text in the area below and press the button. This will trigger " +
+            "a Spring Application event which will use Unirest to send a post request to the endpoint " +
+            "'http://localhost:8080/tkhmm/labeltext/{message}'. This endpoint will then broadcast the message which " +
+            "this view is subscribed to and the message will be displayed below the button.";
+
     private final AuthenticatedUser authenticatedUser;
     private final UI ui;
     private Registration broadcasterRegistration;
     private Label fromEndPoint;
+    private Label fromLocalEndpoint;
     private CvViewData cvViewData;
 
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -60,6 +68,7 @@ public class CvView extends Div {
         ui = UI.getCurrent();
         initialiseHeader();
         initialiseRestApiSection();
+        initialiseRestApiSectionTwo();
     }
 
     private void initialiseHeader() {
@@ -104,7 +113,7 @@ public class CvView extends Div {
     }
 
     private void initialiseRestApiSection() {
-        //Initialise the app information section
+        //Initialise the app Rest section one
         Section restApiSection = new Section();
         restApiSection.addClassName("app-section");
 
@@ -124,6 +133,29 @@ public class CvView extends Div {
         add(restApiSection);
     }
 
+    private void initialiseRestApiSectionTwo() {
+        //Initialise the app Rest section two
+        Section restApiSection = new Section();
+        restApiSection.addClassName("app-section");
+
+        TextArea textArea = new TextArea("Enter text here");
+        textArea.addClassName("rest-tools");
+
+        fromLocalEndpoint = new Label();
+
+        Button sendToLocalEndPoint = new Button("Post text");
+        sendToLocalEndPoint.addClassName("rest-tools");
+        sendToLocalEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        sendToLocalEndPoint.addClickListener(click -> {
+            applicationEventPublisher.publishEvent(new PostTextEvent(this, textArea.getValue()));
+        });
+
+        restApiSection.add(new H3("Spring Rest Controller"), new Paragraph(restApiTextSectionTwo), textArea,
+                sendToLocalEndPoint, fromLocalEndpoint);
+
+        add(restApiSection);
+    }
+
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         broadcasterRegistration = CvViewBroadcaster.register((theLatestCvViewDataObject -> {
@@ -134,7 +166,13 @@ public class CvView extends Div {
     }
 
     private void updateJoke() {
-        fromEndPoint.setText(cvViewData.getAJoke());
+        if (cvViewData.getAJoke() != null) {
+            fromEndPoint.setText(cvViewData.getAJoke());
+        }
+
+        if (cvViewData.getAMessage() != null) {
+            fromLocalEndpoint.setText(cvViewData.getAMessage());
+        }
     }
 
     @Override

@@ -85,7 +85,7 @@ public class CvViewRestCall {
 
         Unirest.setTimeouts(0, 0);
 
-        HttpResponse<String> response = Unirest.put(ENDPOINT + message)
+        HttpResponse<String> response = Unirest.post(ENDPOINT + message)
                 .header("api-key", API_KEY).asString();
 
         log.info("\n\033[1mPost Text\033[0m" +
@@ -109,11 +109,13 @@ public class CvViewRestCall {
         @Value("${api.post.text.endpoint:notSet}")
         private void setEndpoint(String value) {
              ENDPOINT= value;
+             log.info("api.post.text.endpoint=" + value);
         }
 
         @Value("${api.post.text.api.key:notSet}")
         private void setApiKey(String value) {
             API_KEY = value;
+            log.info("api.post.text.api.key=" + value);
         }
     }
 }
