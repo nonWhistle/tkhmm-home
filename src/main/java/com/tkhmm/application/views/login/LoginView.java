@@ -1,5 +1,7 @@
 package com.tkhmm.application.views.login;
 
+import com.tkhmm.application.data.Role;
+import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.security.AuthenticatedUser;
 import com.tkhmm.application.security.UserDetailsServiceImpl;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -12,6 +14,8 @@ import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Set;
 
 
 @AnonymousAllowed
@@ -35,12 +39,12 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 
-//        User user = new User();
-//        user.setHashedPassword(passwordEncoder.encode("user"));
-//        user.setUsername("user");
-//        user.setRoles(Set.of(Role.USER, Role.ADMIN));
-//        user.setName("user");
-//        userDetailsService.save(user);
+        User user = new User();
+        user.setHashedPassword(passwordEncoder.encode("channel4"));
+        user.setUsername("Channel4");
+        user.setRoles(Set.of(Role.USER));
+        user.setName("Channel 4");
+        userDetailsService.save(user);
 
         setForgotPasswordButtonVisible(false);
         setOpened(true);
