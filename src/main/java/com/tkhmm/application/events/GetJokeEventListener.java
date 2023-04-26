@@ -40,7 +40,7 @@ public class GetJokeEventListener implements ApplicationListener<GetJokeEvent> {
 
             CvViewData cvViewData = new CvViewData();
             cvViewData.setAJoke(aJoke);
-            CvViewBroadcaster.broadcast(cvViewData, 1L);
+            CvViewBroadcaster.broadcast(cvViewData, event.getUserId());
 
         } catch (Exception e) {
             log.warning("Unirest failed");

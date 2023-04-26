@@ -26,13 +26,14 @@ public class CvViewController {
     @PostMapping("/labeltext/{message}")
     @ResponseStatus(HttpStatus.OK)
     public void updateLabelTextInCvView(@PathVariable("message") String message,
-                                        @RequestHeader(name = API_KEY_HEADER_NAME) String apiKey) {
+                                        @RequestHeader(name = API_KEY_HEADER_NAME) String apiKey,
+                                        @RequestHeader(name = "user-id") Long id) {
         log.info("Checking credentials of Post request");
         if (apiKey.equals(API_KEY)) {
             log.info("Credentials match, broadcasting data");
             CvViewData cvViewData = new CvViewData();
             cvViewData.setAMessage(message);
-            CvViewBroadcaster.broadcast(cvViewData, 1L);
+            CvViewBroadcaster.broadcast(cvViewData, id);
         } else {
             log.warning("Credentials do not match");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorised");

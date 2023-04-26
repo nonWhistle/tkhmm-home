@@ -12,8 +12,12 @@ public class PostTextEvent extends ApplicationEvent {
     @Getter
     private final String message;
 
-    public PostTextEvent(Object source, String message) {
+    @Getter
+    private final Long userId;
+
+    public PostTextEvent(Object source, String message, Long userId) {
         super(source);
         this.message = message;
+        this.userId = userId;
     }
 }

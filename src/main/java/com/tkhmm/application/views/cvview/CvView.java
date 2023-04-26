@@ -46,10 +46,11 @@ public class CvView extends Div {
 
     private static final String restApiTextSectionTwo = "Enter text in the area below and press the button. This will trigger " +
             "a Spring Application event which will use Unirest to send a post request to the endpoint " +
-            "'http://localhost:8080/tkhmm/labeltext/{message}'. This endpoint will then broadcast the message which " +
+            "'https://theclimbersclimber.co.uk/tkhmm/labeltext/{message}'. This endpoint will then broadcast the message which " +
             "this view is subscribed to and the message will be displayed below the button.";
 
     private final AuthenticatedUser authenticatedUser;
+    private final User user;
     private final UI ui;
     private Registration broadcasterRegistration;
     private Label fromEndPoint;
@@ -62,6 +63,7 @@ public class CvView extends Div {
         log.info("Loading Cv View");
         this.authenticatedUser = authenticatedUser;
         this.applicationEventPublisher = applicationEventPublisher;
+        user = authenticatedUser.get().isPresent()? authenticatedUser.get().get() : null;
 
         addClassNames("top-level-parent");
 
@@ -124,7 +126,7 @@ public class CvView extends Div {
         sendToEndPoint.addClassName("rest-tools");
         sendToEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendToEndPoint.addClickListener(click -> {
-            applicationEventPublisher.publishEvent(new GetJokeEvent(this));
+            applicationEventPublisher.publishEvent(new GetJokeEvent(this, user != null? user.getId() : 0L));
         });
 
         restApiSection.add(new H3("Spring Application Events, RestAPI and Vaadin Broadcaster"), new Paragraph(restApiText),
@@ -147,7 +149,8 @@ public class CvView extends Div {
         sendToLocalEndPoint.addClassName("rest-tools");
         sendToLocalEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendToLocalEndPoint.addClickListener(click -> {
-            applicationEventPublisher.publishEvent(new PostTextEvent(this, textArea.getValue()));
+            applicationEventPublisher.publishEvent(new PostTextEvent(this, textArea.getValue(),
+                    user != null? user.getId() : 0L));
         });
 
         restApiSection.add(new H3("Spring Rest Controller"), new Paragraph(restApiTextSectionTwo), textArea,
@@ -161,11 +164,11 @@ public class CvView extends Div {
         broadcasterRegistration = CvViewBroadcaster.register((theLatestCvViewDataObject -> {
             cvViewData = theLatestCvViewDataObject;
             log.info(theLatestCvViewDataObject.getAJoke());
-            ui.access(this::updateJoke);
-        }), 1L);
+            ui.access(this::updateSections);
+        }), user != null? user.getId() : 0L);
     }
 
-    private void updateJoke() {
+    private void updateSections() {
         if (cvViewData.getAJoke() != null) {
             fromEndPoint.setText(cvViewData.getAJoke());
         }

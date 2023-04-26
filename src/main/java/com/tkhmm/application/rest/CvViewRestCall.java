@@ -36,13 +36,13 @@ public class CvViewRestCall {
      */
     protected static int SECONDS_BETWEEN_TRY = 15;
 
-    public void postText(String message) {
+    public void postText(String message, Long userId) {
         int returnedStatus = 0;
         int count = 0;
 
         while ((returnedStatus != RESPONSE_200) && count < NUMBER_OF_TRYS) {
             try {
-                returnedStatus = postTextToEndpoint(message);
+                returnedStatus = postTextToEndpoint(message, userId);
                 if (returnedStatus != RESPONSE_200) {
                     log.warning("Post text did not return " + RESPONSE_200);
                 } else {
@@ -81,12 +81,13 @@ public class CvViewRestCall {
      * @return The status code from the post request.
      * @throws UnirestException if the post was unsuccessful.
      */
-    private int postTextToEndpoint(String message) throws UnirestException {
+    private int postTextToEndpoint(String message, Long userId) throws UnirestException {
 
         Unirest.setTimeouts(0, 0);
 
         HttpResponse<String> response = Unirest.post(ENDPOINT + message)
-                .header("api-key", API_KEY).asString();
+                .header("api-key", API_KEY)
+                .header("user-id", userId.toString()).asString();
 
         log.info("\n\033[1mPost Text\033[0m" +
                 "\nurl: " + ENDPOINT + message +
