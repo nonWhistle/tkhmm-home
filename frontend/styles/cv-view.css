@@ -53,3 +53,11 @@
     font-family: 'Callie Chalk Font', sans-serif;
     font-size: 24px;
 }
+
+#footer {
+    background: white;
+    border-radius: 5px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}

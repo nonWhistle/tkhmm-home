@@ -13,6 +13,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -71,6 +73,7 @@ public class CvView extends Div {
         initialiseHeader();
         initialiseRestApiSection();
         initialiseRestApiSectionTwo();
+        initialiseFooter();
     }
 
     private void initialiseHeader() {
@@ -149,14 +152,31 @@ public class CvView extends Div {
         sendToLocalEndPoint.addClassName("rest-tools");
         sendToLocalEndPoint.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendToLocalEndPoint.addClickListener(click -> {
-            applicationEventPublisher.publishEvent(new PostTextEvent(this, textArea.getValue(),
-                    user != null? user.getId() : 0L));
+            if (!textArea.isEmpty()) {
+                applicationEventPublisher.publishEvent(new PostTextEvent(this, textArea.getValue(),
+                        user != null? user.getId() : 0L));
+            } else {
+                Notification note = new Notification("Please enter some text and try again", 5000, Notification.Position.MIDDLE);
+                note.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                note.open();
+            }
         });
 
         restApiSection.add(new H3("Spring Rest Controller"), new Paragraph(restApiTextSectionTwo), textArea,
                 sendToLocalEndPoint, fromLocalEndpoint);
 
         add(restApiSection);
+    }
+
+    private void initialiseFooter() {
+        Footer footer = new Footer();
+        footer.setId("footer");
+        H4 contactMe = new H4("Contact me");
+        Label email = new Label("Email:  tom.milton92@outlook.com");
+        Label mobile = new Label("Mobile: 07415711109");
+        footer.add(contactMe, email, mobile);
+        add(footer);
+
     }
 
     @Override
