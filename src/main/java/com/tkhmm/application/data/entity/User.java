@@ -2,6 +2,8 @@ package com.tkhmm.application.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tkhmm.application.data.Role;
+import lombok.*;
+
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -14,12 +16,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "application_user")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends AbstractEntity {
 
     private String username;
     private String name;
     @JsonIgnore
     private String hashedPassword;
+
+    @Getter @Setter
+    private String emailAddress;
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;

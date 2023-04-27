@@ -4,9 +4,11 @@ import com.tkhmm.application.data.Role;
 import com.tkhmm.application.data.entity.User;
 import com.tkhmm.application.data.service.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,11 +37,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public void save(User user) {
-        if (user != null) {
-            userRepository.save(user);
+    public User save(User user) {
+        Optional<User> savedEmployee = userRepository.findByEmailAddress(user.getEmailAddress());
+        if(savedEmployee.isPresent()){
+            throw new ResourceNotFoundException("User already exists with the passed email");
         }
+        return userRepository.save(user);
     }
+
+    
 
     private static List<GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role))
@@ -47,4 +53,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     }
 
+
+    public class ResourceNotFoundException extends RuntimeException {
+
+        @Getter
+        private String message;
+        public ResourceNotFoundException(String message) {
+            super();
+            this.message = message;
+        }
+    }
 }

@@ -29,12 +29,12 @@ public class CvViewRestCall {
     /**
      * Number of attempts to make before giving up.
      */
-    protected static int NUMBER_OF_TRYS = 20;
+    protected static int NUMBER_OF_TRYS = 2;
 
     /**
      * Number of seconds to wait between each post attempt.
      */
-    protected static int SECONDS_BETWEEN_TRY = 15;
+    protected static int SECONDS_BETWEEN_TRY = 2;
 
     public void postText(String message, Long userId) {
         int returnedStatus = 0;
@@ -81,7 +81,7 @@ public class CvViewRestCall {
      * @return The status code from the post request.
      * @throws UnirestException if the post was unsuccessful.
      */
-    private int postTextToEndpoint(String message, Long userId) throws UnirestException {
+    public int postTextToEndpoint(String message, Long userId) throws UnirestException {
 
         Unirest.setTimeouts(0, 0);
 
