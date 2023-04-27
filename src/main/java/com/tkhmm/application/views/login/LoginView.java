@@ -39,13 +39,6 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 
-        User user = new User();
-        user.setHashedPassword(passwordEncoder.encode("channel4"));
-        user.setUsername("Channel4");
-        user.setRoles(Set.of(Role.USER));
-        user.setName("Channel 4");
-        userDetailsService.save(user);
-
         setForgotPasswordButtonVisible(false);
         setOpened(true);
     }
